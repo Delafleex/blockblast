@@ -1,12 +1,23 @@
+# Dockerfile
 FROM node:18
 
-WORKDIR /app
-
-COPY package*.json ./
+# install expo CLI globally (lightweight)
 RUN npm install -g expo-cli
-RUN npm install
 
+# create app dir
+WORKDIR /usr/src/app
+
+# copy package files first (cache npm install)
+COPY package.json package-lock.json* yarn.lock* ./
+
+# install deps
+RUN npm install --production=false
+
+# copy rest
 COPY . .
 
-EXPOSE 19000
-CMD ["npx", "expo", "start", "--tunnel"]
+# expose metro bundler port and web
+EXPOSE 19000 19001 19002
+
+# default command for development: start expo in tunnel mode
+CMD ["npm", "run", "start"]
