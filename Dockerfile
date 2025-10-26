@@ -1,23 +1,20 @@
-# Dockerfile
-FROM node:18
+# Gunakan image Node versi ringan
+FROM node:18-alpine
 
-# install expo CLI globally (lightweight)
-RUN npm install -g expo-cli
-
-# create app dir
+# Set working directory
 WORKDIR /usr/src/app
 
-# copy package files first (cache npm install)
+# Salin package files dulu untuk caching layer npm
 COPY package.json package-lock.json* yarn.lock* ./
 
-# install deps
-RUN npm install --production=false
+# Install expo CLI dan dependencies project
+RUN npm install -g expo-cli && npm install --production=false
 
-# copy rest
+# Copy seluruh project
 COPY . .
 
-# expose metro bundler port and web
+# Port default Expo
 EXPOSE 19000 19001 19002
 
-# default command for development: start expo in tunnel mode
+# Jalankan Expo
 CMD ["npm", "run", "start"]
